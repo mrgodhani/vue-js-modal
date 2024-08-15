@@ -18,13 +18,19 @@ const PluginCore = (Vue, options = {}) => {
     component,
     componentProps,
     componentSlots,
-    modalProps = {},
+    modalProps = componentSlots || {},
     modalEvents
   ) => {
     const container = context.root?.__modalContainer
     const defaults = options.dynamicDefaults || {}
 
-    container?.add(
+    if (!container) {
+      console.warn(
+        'Modal container not found. Make sure the dynamic modal container is set.'
+      )
+      return
+    }
+    container.add(
       component,
       componentProps,
       componentSlots,
@@ -38,15 +44,26 @@ const PluginCore = (Vue, options = {}) => {
    *
    * @param {Vue} parent
    */
-  const setDynamicModalContainer = parent => {
-    context.root = parent
+  const setDynamicModalContainer = (root) => {
+    context.root = root
+
+    if (!root) {
+      console.warn(
+        'Root component is undefined. Make sure the root instance is passed correctly.'
+      )
+      return
+    }
 
     const element = createDivInBody()
 
-    new Vue({
-      parent,
-      render: h => h(ModalsContainer)
-    }).$mount(element)
+    const vnode = createVNode(ModalsContainer)
+    vnode.appContext = root.$.appContext
+
+    try {
+      return render(vnode, element)
+    } catch (error) {
+      console.error('Error rendering vnode:', error)
+    }
   }
 
   const show = (...args) => {
