@@ -40,6 +40,7 @@ export default {
      * Register ModalContainer so that it was availiable inside the plugin
      */
     this.$root.__modalContainer = this
+    this.$modal.subscription.$emit('set-modal-container', this)
   },
   mounted() {
     this.$modal.subscription.$on('hide-all', () => {
@@ -71,7 +72,7 @@ export default {
       })
     },
     remove(id) {
-      const index = this.modals.findIndex(v => v.id === id)
+      const index = this.modals.findIndex((v) => v.id === id)
 
       if (index !== -1) {
         this.modals.splice(index, 1)

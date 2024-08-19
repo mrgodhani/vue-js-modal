@@ -77,6 +77,7 @@ const TransitionState = {
 
 export default {
   name: 'VueJsModal',
+  inject: ['$modal'],
   props: {
     name: {
       required: true,
@@ -88,9 +89,9 @@ export default {
     },
     resizeEdges: {
       default: () => ['r', 'br', 'b', 'bl', 'l', 'tl', 't', 'tr'],
-      validator: val =>
+      validator: (val) =>
         ['r', 'br', 'b', 'bl', 'l', 'tl', 't', 'tr'].filter(
-          value => val.indexOf(value) !== -1
+          (value) => val.indexOf(value) !== -1
         ).length === val.length,
       type: Array
     },
@@ -250,7 +251,7 @@ export default {
     }
   },
   mounted() {
-    this.resizeObserver = new ResizeObserver(entries => {
+    this.resizeObserver = new ResizeObserver((entries) => {
       if (entries.length > 0) {
         const [entry] = entries
 
@@ -263,7 +264,7 @@ export default {
   /**
    * Removes global listeners
    */
-  beforeDestroy() {
+  beforeUnmount() {
     this.$modal.subscription.$off('toggle', this.onToggle)
 
     window.removeEventListener('resize', this.onWindowResize)
@@ -498,7 +499,9 @@ export default {
 
     beforeModalTransitionLeave() {
       this.modalTransitionState = TransitionState.Leaving
-      this.resizeObserver.unobserve(this.$refs.modal)
+      if (this.$refs.modal) {
+        this.resizeObserver.unobserve(this.$refs.modal)
+      }
 
       if (this.$focusTrap.enabled()) {
         this.$focusTrap.disable()
@@ -589,12 +592,8 @@ export default {
      * This method shifts the modal in the x direction.
      */
     getResizedShiftLeft(event) {
-      const {
-        viewportHeight,
-        viewportWidth,
-        trueModalWidth,
-        trueModalHeight
-      } = this
+      const { viewportHeight, viewportWidth, trueModalWidth, trueModalHeight } =
+        this
 
       let result = this.shiftLeft
 
@@ -623,12 +622,8 @@ export default {
      * This method shifts the modal in the y direction.
      */
     getResizedShiftTop(event) {
-      const {
-        viewportHeight,
-        viewportWidth,
-        trueModalWidth,
-        trueModalHeight
-      } = this
+      const { viewportHeight, viewportWidth, trueModalWidth, trueModalHeight } =
+        this
 
       let result = this.shiftTop
 
@@ -767,7 +762,7 @@ export default {
         let initialShiftLeft = 0
         let initialShiftTop = 0
 
-        const handleDraggableMousedown = event => {
+        const handleDraggableMousedown = (event) => {
           let target = event.target
 
           if (isInput(target)) {
@@ -789,7 +784,7 @@ export default {
           initialShiftTop = this.shiftTop
         }
 
-        const handleDraggableMousemove = event => {
+        const handleDraggableMousemove = (event) => {
           let { clientX, clientY } = getTouchEvent(event)
 
           this.shiftLeft = initialShiftLeft + clientX - startX
@@ -798,7 +793,7 @@ export default {
           event.preventDefault()
         }
 
-        const handleDraggableMouseup = event => {
+        const handleDraggableMouseup = (event) => {
           this.ensureShiftInWindowBounds()
 
           document.removeEventListener('mousemove', handleDraggableMousemove)

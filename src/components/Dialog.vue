@@ -16,9 +16,17 @@
     @closed="$emit('closed', $event)"
   >
     <div class="vue-dialog-content">
-      <div class="vue-dialog-content-title" v-if="params.title" v-html="params.title || ''" />
+      <div
+        class="vue-dialog-content-title"
+        v-if="params.title"
+        v-html="params.title || ''"
+      />
 
-      <component v-if="params.component" v-bind="params.props" :is="params.component" />
+      <component
+        v-if="params.component"
+        v-bind="params.props"
+        :is="params.component"
+      />
       <div v-else v-html="params.text || ''" />
     </div>
     <div class="vue-dialog-buttons" v-if="buttons">
@@ -31,7 +39,7 @@
         :key="index"
         v-html="button.title"
         @click.stop="click(index, $event)"
-      >{{ button.title }}</button>
+      />
     </div>
     <div v-else class="vue-dialog-buttons-none" />
   </component>
@@ -52,6 +60,7 @@ export default {
       type: String
     }
   },
+  inject: ['$modal'],
   data() {
     return {
       params: {}
