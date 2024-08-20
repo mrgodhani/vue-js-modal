@@ -2,9 +2,9 @@ import { UNSUPPORTED_ARGUMENT_ERROR } from './utils/errors'
 import { createDivInBody } from './utils'
 import ModalsContainer from './components/ModalsContainer.vue'
 import emitter from 'tiny-emitter/instance'
-import { createVNode, render } from 'vue'
+import { createVNode, render, h } from 'vue'
 
-const PluginCore = (app, options = {}) => {
+const PluginCore = (options = {}) => {
   const subscription = {
     $on: (...args) => emitter.on(...args),
     $once: (...args) => emitter.once(...args),
@@ -12,6 +12,10 @@ const PluginCore = (app, options = {}) => {
     $emit: (...args) => emitter.emit(...args)
   }
 
+  const context = {
+    root: null,
+    componentName: options.componentName || 'Modal'
+  }
   subscription.$on('set-modal-container', (container) => {
     context.root.__modalContainer = container
   })
@@ -29,7 +33,6 @@ const PluginCore = (app, options = {}) => {
   ) => {
     const container = context.root?.__modalContainer
     const defaults = options.dynamicDefaults || {}
-
     if (!container) {
       console.warn(
         'Modal container not found. Make sure the dynamic modal container is set.'
@@ -45,10 +48,6 @@ const PluginCore = (app, options = {}) => {
     )
   }
 
-  /**
-   * Creates a container for modals in the root Vue component.
-   *
-   */
   const setDynamicModalContainer = (root) => {
     context.root = root
 

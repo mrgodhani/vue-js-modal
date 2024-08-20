@@ -23,10 +23,17 @@ const Plugin = {
       }
     })
 
+    /**
+     * Sets custom component name (if provided)
+     */
     app.component(plugin.context.componentName, Modal)
 
+    /**
+     * Registration of <Dialog/> component
+     */
     if (options.dialog) {
-      app.component('Dialog', Dialog)
+      const componentName = options.dialogComponentName || 'VDialog'
+      app.component(componentName, Dialog)
     }
   }
 }
